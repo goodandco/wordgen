@@ -1,6 +1,9 @@
 "use strict";
 
-const CommonAlgorithm = require("./common");
+/* eslint-disable no-console */
+
+const { search } = require("./common");
+// eslint-disable-next-line import/order
 const readline = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -8,13 +11,23 @@ const readline = require("readline").createInterface({
 
 function genque() {
   readline.question("Введите буквы для генерации слов?\n", async (input) => {
-    const startTime = Date.now();
-    console.log(`Время начала выполнения: ${new Date(startTime)}`);
-    const searchResults = await CommonAlgorithm.search(input.trim());
-    const finishTime = Date.now();
-    console.log(`Время конца выполнения: ${new Date(finishTime)}`);
-    console.log(`Общее время выполнения: ${(finishTime - startTime) / 1000} s`);
-    console.log(searchResults);
+    console.time("execution time");
+    const result = await search(input.trim());
+    console.timeEnd("execution time");
+    for (const countKey of Object.keys(result)) {
+      const groupKey = `Кол. символов:  ${countKey}:`;
+      console.group("\x1b[33m%s\x1b[0m", groupKey);
+      const mes = result[countKey].reduce((res, w, i) => {
+        const newLine = i === 0 || i % 12 ? "" : "\n";
+        const postfix = (i + 1 < result[countKey].length) ? `, ${newLine}` : "";
+        return res + w + postfix;
+      }, "");
+      console.log("\x1b[36m%s\x1b[0m", mes);
+
+      console.groupEnd(groupKey);
+    }
+
+    // eslint-disable-next-line no-use-before-define
     quitque();
   });
 }
@@ -30,5 +43,3 @@ function quitque() {
 }
 
 genque();
-
-// main();

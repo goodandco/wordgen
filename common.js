@@ -3,16 +3,29 @@
 const fs = require("fs");
 const readline = require("readline");
 
+// const FILENAME = "./russian.txt";
+const FILENAME = "./word_rus.txt";
+
 class A {
   static async search(input, minLength = 3) {
-    return A.find({ input, minLength });
+    return (await A.find({ input, minLength })).reduce((res, word) => {
+      const key = word.length;
+
+      if (!res[key]) {
+        res[key] = [];
+      }
+
+      res[key].push(word);
+
+      return res;
+    }, {});
   }
 
   static async find({ input, minLength }) {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       const result = [];
-      const readStream = fs.createReadStream("./russian.txt");
+      const readStream = fs.createReadStream(FILENAME);
       const rl = readline.createInterface({ input: readStream });
 
       rl.on("line", (line) => {
